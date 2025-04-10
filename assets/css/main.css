@@ -17,14 +17,16 @@
   --nav-font: "Poppins",  sans-serif;
 }
 
-/* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
+/* Global Colors - Updated with a modern and attractive color scheme */
 :root { 
-  --background-color: #f6f8fa; /* Background color for the entire website, including individual sections */
-  --default-color: #272829; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #45505b; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #0563bb; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
-  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
-  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+  --background-color: #f8f9fa; /* Light, clean background */
+  --default-color: #2d3436; /* Darker text for better readability */
+  --heading-color: #0984e3; /* Vibrant blue for headings */
+  --accent-color: #6c5ce7; /* Modern purple accent color */
+  --secondary-accent: #00b894; /* Mint accent for variety */
+  --surface-color: #ffffff; /* Clean white for card surfaces */
+  --contrast-color: #ffffff; /* White for text on dark backgrounds */
+  --dark-surface: #2d3436; /* Dark surface for contrast sections */
 }
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
@@ -280,27 +282,24 @@ h6 {
 # Global Footer
 --------------------------------------------------------------*/
 .footer {
-  color: var(--default-color);
-  background-color: var(--background-color);
+  background: linear-gradient(135deg, rgba(45, 52, 54, 0.95) 0%, rgba(53, 59, 72, 0.95) 100%);
+  color: var(--contrast-color);
+  padding: 60px 0 30px;
   font-size: 14px;
   text-align: center;
-  padding: 30px 0;
   position: relative;
 }
 
 .footer h3 {
-  font-size: 36px;
+  color: var(--contrast-color);
   font-weight: 700;
-  position: relative;
-  padding: 0;
-  margin: 0 0 15px 0;
+  margin-bottom: 20px;
+  font-size: 28px;
 }
 
 .footer p {
-  font-size: 15;
-  font-style: italic;
-  padding: 0;
-  margin: 0 0 30px 0;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 30px;
 }
 
 .footer .social-links {
@@ -328,9 +327,25 @@ h6 {
   text-decoration: none;
 }
 
+.footer .social-link {
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 40px;
+  height: 40px;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+}
+
+.footer .social-link:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-5px);
+}
+
 .footer .copyright {
-  padding-top: 25px;
-  border-top: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .footer .credits {
@@ -515,13 +530,64 @@ section,
 /*--------------------------------------------------------------
 # Hero Section
 --------------------------------------------------------------*/
-.hero {
-  width: 100%;
-  min-height: 100vh;
+
+.glitch {
   position: relative;
-  padding: 80px 0;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 #6C63FF;
+  clip: rect(24px, 550px, 90px, 0);
+  animation: glitch-anim 3s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -2px;
+  text-shadow: -2px 0 #FF6B6B;
+  clip: rect(85px, 550px, 140px, 0);
+  animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+  0% {
+      clip: rect(24px, 550px, 90px, 0);
+  }
+  20% {
+      clip: rect(85px, 550px, 140px, 0);
+  }
+  40% {
+      clip: rect(66px, 550px, 115px, 0);
+  }
+  60% {
+      clip: rect(92px, 550px, 140px, 0);
+  }
+  80% {
+      clip: rect(85px, 550px, 130px, 0);
+  }
+  100% {
+      clip: rect(40px, 550px, 105px, 0);
+  }
+}
+
+.hero {
+  background: linear-gradient(135deg, rgba(10, 10, 10, 0.8) 0%, rgba(60, 60, 60, 0.8) 100%);
+  min-height: 100vh;
   display: flex;
   align-items: center;
+  width: 100%;
+  position: relative;
+  padding: 80px 0;
   justify-content: center;
 }
 
@@ -537,7 +603,7 @@ section,
 
 .hero:before {
   content: "";
-  background: color-mix(in srgb, var(--background-color), transparent 30%);
+  /* background: color-mix(in srgb, var(--background-color), transparent 30%); */
   position: absolute;
   inset: 0;
   z-index: 2;
@@ -549,14 +615,16 @@ section,
 }
 
 .hero h2 {
-  margin: 0;
-  font-size: 64px;
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  color: var(--contrast-color);
   font-weight: 700;
 }
 
 .hero p {
-  margin: 5px 0 0 0;
-  font-size: 26px;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .hero p span {
@@ -569,15 +637,24 @@ section,
 }
 
 .hero .social-links a {
-  font-size: 20px;
-  display: inline-block;
-  color: color-mix(in srgb, var(--default-color), transparent 30%);
-  line-height: 1;
-  margin-right: 20px;
-  transition: 0.3s;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--contrast-color);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+  transition: all 0.3s ease;
 }
 
 .hero .social-links a:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-5px);
+}
+
+.hero .typed-cursor {
   color: var(--accent-color);
 }
 
@@ -697,6 +774,66 @@ section,
   background-color: var(--accent-color);
 }
 
+/* Enhanced skill card styling */
+.skill-card {
+  background: var(--surface-color);
+  border-radius: 12px;
+  padding: 25px 20px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.skill-card:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--heading-color) 100%);
+  transition: height 0.3s ease;
+  z-index: -1;
+  opacity: 0.9;
+}
+
+.skill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  color: var(--contrast-color);
+}
+
+.skill-card:hover:before {
+  height: 100%;
+}
+
+.skill-card:hover h4,
+.skill-card:hover p {
+  color: var(--contrast-color);
+}
+
+.skill-card:hover .skill-icon {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--contrast-color);
+}
+
+.skill-icon {
+  font-size: 36px;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(108, 92, 231, 0.1);
+  color: var(--accent-color);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
 /*--------------------------------------------------------------
 # Resume Section
 --------------------------------------------------------------*/
@@ -709,10 +846,19 @@ section,
 }
 
 .resume .resume-item {
-  padding: 0 0 20px 20px;
-  margin-top: -2px;
-  border-left: 2px solid var(--accent-color);
+  background-color: var(--surface-color);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid var(--accent-color);
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.resume .resume-item:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
 }
 
 .resume .resume-item h4 {
@@ -754,6 +900,24 @@ section,
   top: 0;
   background: var(--background-color);
   border: 2px solid var(--accent-color);
+}
+
+.resume .resume-title {
+  display: inline-block;
+  position: relative;
+  margin-bottom: 30px;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+.resume .resume-title:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 50px;
+  height: 3px;
+  background-color: var(--accent-color);
 }
 
 /*--------------------------------------------------------------
@@ -804,6 +968,23 @@ section,
 .portfolio .portfolio-item {
   position: relative;
   overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.portfolio .portfolio-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.portfolio .portfolio-item img {
+  transition: transform 0.5s ease;
+}
+
+.portfolio .portfolio-item:hover img {
+  transform: scale(1.1);
 }
 
 .portfolio .portfolio-item .portfolio-info {
@@ -816,6 +997,22 @@ section,
   transition: all ease-in-out 0.5s;
   background: color-mix(in srgb, var(--background-color), transparent 10%);
   padding: 15px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  padding: 20px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.portfolio .portfolio-item:hover .portfolio-info {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .portfolio .portfolio-item .portfolio-info h4 {
@@ -852,9 +1049,20 @@ section,
   font-size: 28px;
 }
 
-.portfolio .portfolio-item:hover .portfolio-info {
-  opacity: 1;
-  bottom: 0;
+.portfolio .portfolio-filters li {
+  background-color: rgba(108, 92, 231, 0.1);
+  border-radius: 30px;
+  padding: 8px 20px;
+  margin: 0 5px 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.portfolio-filters li:hover, 
+.portfolio-filters li.filter-active {
+  background-color: var(--accent-color);
+  color: white;
 }
 
 /*--------------------------------------------------------------
@@ -1108,6 +1316,10 @@ section,
 
 .contact .php-email-form {
   height: 100%;
+  background-color: var(--surface-color);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
 .contact .php-email-form input[type=text],
@@ -1119,7 +1331,7 @@ section,
   border-radius: 0;
   color: var(--default-color);
   background-color: color-mix(in srgb, var(--background-color), transparent 50%);
-  border-color: color-mix(in srgb, var(--default-color), transparent 80%);
+  border-color: color-mix(in srgb, var (--default-color), transparent 80%);
 }
 
 .contact .php-email-form input[type=text]:focus,
@@ -1145,6 +1357,33 @@ section,
 
 .contact .php-email-form button[type=submit]:hover {
   background: color-mix(in srgb, var(--accent-color), transparent 25%);
+}
+
+.contact .php-email-form .form-control {
+  border-radius: 8px;
+  padding: 12px 15px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.contact .php-email-form .form-control:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+}
+
+.contact .php-email-form button[type="submit"] {
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--heading-color) 100%);
+  border: 0;
+  padding: 12px 35px;
+  color: var(--contrast-color);
+  border-radius: 50px;
+  box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+  transition: all 0.3s ease;
+}
+
+.contact .php-email-form button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
 }
 
 /*--------------------------------------------------------------
@@ -1373,7 +1612,7 @@ section,
 
 .service-details .services-list a:hover {
   background-color: color-mix(in srgb, var(--accent-color), transparent 95%);
-  color: var(--accent-color);
+  color: var (--accent-color);
 }
 
 .service-details .download-catalog a {
@@ -1456,4 +1695,62 @@ section,
 --------------------------------------------------------------*/
 .starter-section {
   /* Add your styles here */
+}
+
+/* Custom gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(135deg, var(--accent-color), var(--heading-color));
+  color: var(--contrast-color);
+}
+
+/* Enhanced card styling */
+.card-custom {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Animation for scroll reveal */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--accent-color), var(--heading-color));
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--heading-color), var(--accent-color));
+}
+
+/* Hide horizontal scrollbar */
+::-webkit-scrollbar:horizontal {
+  display: none;
 }
