@@ -22,6 +22,47 @@
   headerToggleBtn.addEventListener('click', headerToggle);
 
   /**
+   * Theme toggle functionality
+   */
+  const themeToggleBtn = document.getElementById('theme-toggle-btn');
+  
+  // Check for saved theme preference or use preferred color scheme
+  function getThemePreference() {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      return storedTheme;
+    }
+    // Use system preference as fallback
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  
+  // Set theme and update toggle button
+  function setTheme(theme) {
+    if (theme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+    localStorage.setItem('theme', theme);
+  }
+  
+  // Toggle theme
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+  }
+  
+  // Initialize theme
+  if (themeToggleBtn) {
+    // Apply the saved theme on load
+    setTheme(getThemePreference());
+    
+    // Add event listener for theme toggle button
+    themeToggleBtn.addEventListener('click', toggleTheme);
+  }
+
+  /**
    * Hide mobile nav on same-page/hash links
    */
   document.querySelectorAll('#navmenu a').forEach(navmenu => {
