@@ -16,6 +16,7 @@ class ModernPortfolio {
         this.setupProjectFilter();
         this.setupFormHandling();
         this.setupParticleAnimation();
+        this.setup3DCardEffects();
         this.initializeLucideIcons();
     }
 
@@ -583,6 +584,88 @@ class ModernPortfolio {
             document.body.classList.remove('keyboard-navigation');
         });
     }
+
+    // 3D Card Effects with Mouse Tracking
+    setup3DCardEffects() {
+        const cards = document.querySelectorAll('.project-card, .floating-card, .skill-item');
+        
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / centerY * -10;
+                const rotateY = (x - centerX) / centerX * 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
+                card.style.boxShadow = '0 20px 40px rgba(99, 102, 241, 0.3)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+                card.style.boxShadow = '';
+            });
+        });
+
+        // Enhanced floating cards interaction
+        const floatingCards = document.querySelectorAll('.floating-card');
+        floatingCards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.style.animation = 'none';
+                card.style.transform = 'rotateY(360deg) scale(1.2)';
+                
+                setTimeout(() => {
+                    card.style.animation = '';
+                    card.style.transform = '';
+                }, 600);
+            });
+        });
+
+        // 3D Progress bars for skills
+        this.enhance3DProgressBars();
+    }
+
+    enhance3DProgressBars() {
+        const skillItems = document.querySelectorAll('.skill-item');
+        
+        skillItems.forEach(skill => {
+            const progressBar = skill.querySelector('.skill-progress');
+            if (progressBar) {
+                const progress = progressBar.style.width || '0%';
+                progressBar.style.background = 'linear-gradient(45deg, var(--color-primary), var(--color-secondary))';
+                progressBar.style.borderRadius = '10px';
+                progressBar.style.position = 'relative';
+                progressBar.style.overflow = 'hidden';
+                
+                // Add animated shine effect
+                const shine = document.createElement('div');
+                shine.style.cssText = `
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                    animation: shine 2s infinite;
+                `;
+                progressBar.appendChild(shine);
+            }
+        });
+
+        // Add shine animation to CSS
+        const shineStyle = document.createElement('style');
+        shineStyle.textContent = `
+            @keyframes shine {
+                0% { left: -100%; }
+                100% { left: 100%; }
+            }
+        `;
+        document.head.appendChild(shineStyle);
+    }
 }
 
 // Add CSS for animations
@@ -634,7 +717,306 @@ document.head.appendChild(style);
 // Initialize the portfolio when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new ModernPortfolio();
+    
+    // Initialize 3D system after a short delay to ensure Three.js is loaded
+    setTimeout(() => {
+        if (typeof THREE !== 'undefined') {
+            new Portfolio3D();
+        }
+    }, 500);
 });
+
+// 3D Engine for Portfolio Enhancements
+class Portfolio3D {
+    constructor() {
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.geometricShapes = [];
+        this.particles = null;
+        this.mouse = { x: 0, y: 0 };
+        this.raycaster = new THREE.Raycaster();
+        this.clock = new THREE.Clock();
+        this.animationId = null;
+        
+        this.init();
+    }
+
+    init() {
+        this.createScene();
+        this.createGeometricBackground();
+        this.createInteractiveParticles();
+        this.setupEventListeners();
+        this.animate();
+    }
+
+    createScene() {
+        // Create scene
+        this.scene = new THREE.Scene();
+
+        // Create camera
+        this.camera = new THREE.PerspectiveCamera(
+            75, 
+            window.innerWidth / window.innerHeight, 
+            0.1, 
+            1000
+        );
+        this.camera.position.z = 5;
+
+        // Create renderer
+        this.renderer = new THREE.WebGLRenderer({ 
+            alpha: true, 
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setClearColor(0x000000, 0);
+
+        // Add to hero background
+        const heroBackground = document.querySelector('.hero-particles');
+        if (heroBackground) {
+            heroBackground.innerHTML = '';
+            heroBackground.appendChild(this.renderer.domElement);
+            this.renderer.domElement.style.position = 'absolute';
+            this.renderer.domElement.style.top = '0';
+            this.renderer.domElement.style.left = '0';
+            this.renderer.domElement.style.zIndex = '-1';
+        }
+    }
+
+    createGeometricBackground() {
+        const geometries = [
+            new THREE.BoxGeometry(0.5, 0.5, 0.5),
+            new THREE.SphereGeometry(0.3, 32, 32),
+            new THREE.TetrahedronGeometry(0.4),
+            new THREE.OctahedronGeometry(0.4),
+            new THREE.IcosahedronGeometry(0.3)
+        ];
+
+        const materials = [
+            new THREE.MeshPhongMaterial({ 
+                color: 0x6366f1, 
+                transparent: true, 
+                opacity: 0.6,
+                wireframe: false
+            }),
+            new THREE.MeshPhongMaterial({ 
+                color: 0x8b5cf6, 
+                transparent: true, 
+                opacity: 0.4,
+                wireframe: true
+            }),
+            new THREE.MeshPhongMaterial({ 
+                color: 0x0ea5e9, 
+                transparent: true, 
+                opacity: 0.5
+            })
+        ];
+
+        // Create floating geometric shapes
+        for (let i = 0; i < 15; i++) {
+            const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+            const material = materials[Math.floor(Math.random() * materials.length)].clone();
+            const mesh = new THREE.Mesh(geometry, material);
+
+            // Random position
+            mesh.position.x = (Math.random() - 0.5) * 20;
+            mesh.position.y = (Math.random() - 0.5) * 20;
+            mesh.position.z = (Math.random() - 0.5) * 10;
+
+            // Random rotation
+            mesh.rotation.x = Math.random() * Math.PI;
+            mesh.rotation.y = Math.random() * Math.PI;
+
+            // Physics properties
+            mesh.userData = {
+                velocity: {
+                    x: (Math.random() - 0.5) * 0.02,
+                    y: (Math.random() - 0.5) * 0.02,
+                    z: (Math.random() - 0.5) * 0.02
+                },
+                rotationSpeed: {
+                    x: (Math.random() - 0.5) * 0.05,
+                    y: (Math.random() - 0.5) * 0.05,
+                    z: (Math.random() - 0.5) * 0.05
+                }
+            };
+
+            this.geometricShapes.push(mesh);
+            this.scene.add(mesh);
+        }
+
+        // Add ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+        this.scene.add(ambientLight);
+
+        // Add directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 5, 5);
+        this.scene.add(directionalLight);
+    }
+
+    createInteractiveParticles() {
+        const particleCount = 500;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        const velocities = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            
+            // Positions
+            positions[i3] = (Math.random() - 0.5) * 20;
+            positions[i3 + 1] = (Math.random() - 0.5) * 20;
+            positions[i3 + 2] = (Math.random() - 0.5) * 10;
+
+            // Colors
+            const colorChoice = Math.random();
+            if (colorChoice < 0.33) {
+                colors[i3] = 0.39; colors[i3 + 1] = 0.40; colors[i3 + 2] = 0.94; // Primary
+            } else if (colorChoice < 0.66) {
+                colors[i3] = 0.55; colors[i3 + 1] = 0.36; colors[i3 + 2] = 0.96; // Purple
+            } else {
+                colors[i3] = 0.05; colors[i3 + 1] = 0.65; colors[i3 + 2] = 0.91; // Blue
+            }
+
+            // Velocities
+            velocities[i3] = (Math.random() - 0.5) * 0.01;
+            velocities[i3 + 1] = (Math.random() - 0.5) * 0.01;
+            velocities[i3 + 2] = (Math.random() - 0.5) * 0.01;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+
+        const material = new THREE.PointsMaterial({
+            size: 2,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        this.particles = new THREE.Points(geometry, material);
+        this.scene.add(this.particles);
+    }
+
+    setupEventListeners() {
+        // Mouse movement
+        document.addEventListener('mousemove', (event) => {
+            this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Resize
+        window.addEventListener('resize', () => {
+            this.camera.aspect = window.innerWidth / window.innerHeight;
+            this.camera.updateProjectionMatrix();
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Reduced motion preference
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        if (prefersReducedMotion.matches) {
+            this.renderer.domElement.style.display = 'none';
+        }
+    }
+
+    animate() {
+        this.animationId = requestAnimationFrame(() => this.animate());
+
+        const deltaTime = this.clock.getDelta();
+        const elapsedTime = this.clock.getElapsedTime();
+
+        // Animate geometric shapes
+        this.geometricShapes.forEach((shape) => {
+            // Physics movement
+            shape.position.x += shape.userData.velocity.x;
+            shape.position.y += shape.userData.velocity.y;
+            shape.position.z += shape.userData.velocity.z;
+
+            // Rotation
+            shape.rotation.x += shape.userData.rotationSpeed.x;
+            shape.rotation.y += shape.userData.rotationSpeed.y;
+            shape.rotation.z += shape.userData.rotationSpeed.z;
+
+            // Boundary checks
+            if (Math.abs(shape.position.x) > 10) shape.userData.velocity.x *= -1;
+            if (Math.abs(shape.position.y) > 10) shape.userData.velocity.y *= -1;
+            if (Math.abs(shape.position.z) > 5) shape.userData.velocity.z *= -1;
+
+            // Mouse interaction
+            const distance = shape.position.distanceTo(new THREE.Vector3(this.mouse.x * 10, this.mouse.y * 10, 0));
+            if (distance < 3) {
+                const force = 0.1 / (distance + 0.1);
+                shape.userData.velocity.x += (shape.position.x - this.mouse.x * 10) * force * 0.001;
+                shape.userData.velocity.y += (shape.position.y - this.mouse.y * 10) * force * 0.001;
+            }
+        });
+
+        // Animate particles with mouse interaction
+        if (this.particles) {
+            const positions = this.particles.geometry.attributes.position.array;
+            const velocities = this.particles.geometry.attributes.velocity.array;
+
+            for (let i = 0; i < positions.length; i += 3) {
+                // Magnetic effect towards mouse
+                const px = positions[i];
+                const py = positions[i + 1];
+                const mouseWorldX = this.mouse.x * 10;
+                const mouseWorldY = this.mouse.y * 10;
+                
+                const dx = mouseWorldX - px;
+                const dy = mouseWorldY - py;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 5) {
+                    const force = 0.05 / (distance + 0.1);
+                    velocities[i] += dx * force * 0.001;
+                    velocities[i + 1] += dy * force * 0.001;
+                }
+
+                // Apply velocities
+                positions[i] += velocities[i];
+                positions[i + 1] += velocities[i + 1];
+                positions[i + 2] += velocities[i + 2];
+
+                // Damping
+                velocities[i] *= 0.98;
+                velocities[i + 1] *= 0.98;
+                velocities[i + 2] *= 0.98;
+
+                // Boundary wrapping
+                if (positions[i] > 10) positions[i] = -10;
+                if (positions[i] < -10) positions[i] = 10;
+                if (positions[i + 1] > 10) positions[i + 1] = -10;
+                if (positions[i + 1] < -10) positions[i + 1] = 10;
+            }
+
+            this.particles.geometry.attributes.position.needsUpdate = true;
+            this.particles.geometry.attributes.velocity.needsUpdate = true;
+        }
+
+        // Camera gentle movement
+        this.camera.position.x = Math.sin(elapsedTime * 0.1) * 0.5;
+        this.camera.position.y = Math.cos(elapsedTime * 0.15) * 0.3;
+        this.camera.lookAt(0, 0, 0);
+
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    destroy() {
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+        if (this.renderer) {
+            this.renderer.dispose();
+        }
+    }
+}
 
 // Service Worker for offline support (Progressive Web App)
 if ('serviceWorker' in navigator) {
