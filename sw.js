@@ -1,5 +1,5 @@
 // Service Worker for Nishant Verma Portfolio
-const CACHE_NAME = 'nishant-portfolio-v2'; // Increment version number
+const CACHE_NAME = 'nishant-portfolio-v3'; // Increment version number
 const urlsToCache = [
     '/',
     '/index_new.html',
